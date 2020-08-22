@@ -35,12 +35,12 @@ resource "aws_ecs_service" "webapp-east" {
     name = var.webapp
     cluster = aws_ecs_cluster.east.id
     task_definition = aws_ecs_task_definition.webapp-east.arn
-    iam_role = aws_iam_role.ecs_service_role.arn
-    desired_count = 2
+    desired_count = 3
     launch_type = "FARGATE"
-    platform_version = "FARGATE"
+    
     network_configuration {
       subnets = ["subnet-03e2fbcd549a5d6a0", "subnet-0c99cdabe86a4d948", "subnet-0f6754f32fb0dd8f9"]
+      security_groups = [aws_security_group.webapp-east-fargate.id]
     }
     depends_on = [aws_iam_role_policy.ecs_service_role_policy]
 
@@ -71,4 +71,30 @@ resource "aws_iam_role_policy" "fargate_execution_role_policy" {
     name = "fargate_execution_role_policy"
     policy = file("policies/fargate-execution-role-policy.json")
     role = aws_iam_role.fargate_execution_role.id
+}
+resource "aws_security_group" "webapp-east-fargate" {
+  name        = "${var.webapp}-fargate"
+  description = "Allow traffic from ALB SG"
+  vpc_id      = var.vpc_east
+
+    ingress {
+    description = "80 from VPC"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    security_groups = [aws_security_group.webapp-east.id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags               = {
+    Terraform   = "true"
+    Environment = "dev"
+    Owner       = "cliwhite"
+  }
 }
