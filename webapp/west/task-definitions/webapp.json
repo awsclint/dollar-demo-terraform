@@ -1,6 +1,6 @@
 [{
     "name": "dollars-demo-web",
-    "image": "251607623447.dkr.ecr.us-east-1.amazonaws.com/dollars-demo-web:latest",
+    "image": "251607623447.dkr.ecr.us-west-2.amazonaws.com/dollars-demo-web:latest",
     "portMappings": [{
         "containerPort": 80,
         "hostPort": 80,

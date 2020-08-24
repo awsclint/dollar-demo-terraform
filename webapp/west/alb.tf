@@ -84,15 +84,3 @@ resource "aws_security_group" "webapp-west" {
     Owner       = "cliwhite"
   }
 }
-
-resource "aws_route53_record" "webapp" {
-  zone_id = "Z05314583A02UE0WUMG81"
-  name    = "west.demo.awsclint.com"
-  type    = "A"
-
-  alias {
-    name                   = aws_lb.webapp-west.dns_name
-    zone_id                = aws_lb.webapp-west.zone_id
-    evaluate_target_health = true
-  }
-}

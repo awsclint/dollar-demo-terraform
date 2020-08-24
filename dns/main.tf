@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket = "awsclint-tfstate"
-    key    = "dollars-demo/iam/east"
+    key    = "dollars-demo/dns"
     region = "us-east-1"
   }
 }
