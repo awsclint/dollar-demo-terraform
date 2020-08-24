@@ -1,10 +1,10 @@
-#WebApp ALB in US-EAST-1
-resource "aws_lb" "webapp-east" {
+#WebApp ALB in US-WEST-2
+resource "aws_lb" "webapp-west" {
   name               = var.webapp
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.webapp-east.id]
-  subnets            = ["subnet-0f5b64ed0463e03f0","subnet-04e1a05b10dd31548", "subnet-07b2b1c96683143c6"]
+  security_groups    = [aws_security_group.webapp-west.id]
+  subnets            = var.pub_subnets
 
   tags               = {
     Terraform   = "true"
@@ -13,21 +13,22 @@ resource "aws_lb" "webapp-east" {
   }
 }
 
-resource "aws_lb_listener" "webapp-east-https" {
-  load_balancer_arn = aws_lb.webapp-east.arn
+#ACM Cert was previously created
+resource "aws_lb_listener" "webapp-west-https" {
+  load_balancer_arn = aws_lb.webapp-west.arn
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = "arn:aws:acm:us-east-1:251607623447:certificate/4252177a-6ceb-4d71-b40b-312e36eed95d"
+  certificate_arn   = var.cert_arn
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.webapp-east.arn
+    target_group_arn = aws_lb_target_group.webapp-west.arn
   }
 }
 
-resource "aws_lb_listener" "webapp-east-http" {
-  load_balancer_arn = aws_lb.webapp-east.arn
+resource "aws_lb_listener" "webapp-west-http" {
+  load_balancer_arn = aws_lb.webapp-west.arn
   port              = "80"
   protocol          = "HTTP"
 
@@ -42,18 +43,18 @@ resource "aws_lb_listener" "webapp-east-http" {
   }
 }
 
-resource "aws_lb_target_group" "webapp-east" {
+resource "aws_lb_target_group" "webapp-west" {
   name     = var.webapp
   port     = 80
   protocol = "HTTP"
   target_type = "ip"
-  vpc_id   = var.vpc_east
+  vpc_id   = var.vpc_west
 }
 
-resource "aws_security_group" "webapp-east" {
+resource "aws_security_group" "webapp-west" {
   name        = var.webapp
   description = "Allow inbound web traffic from anywhere"
-  vpc_id      = var.vpc_east
+  vpc_id      = var.vpc_west
 
   ingress {
     description = "TLS from VPC"
@@ -86,12 +87,12 @@ resource "aws_security_group" "webapp-east" {
 
 resource "aws_route53_record" "webapp" {
   zone_id = "Z05314583A02UE0WUMG81"
-  name    = "east.demo.awsclint.com"
+  name    = "west.demo.awsclint.com"
   type    = "A"
 
   alias {
-    name                   = aws_lb.webapp-east.dns_name
-    zone_id                = aws_lb.webapp-east.zone_id
+    name                   = aws_lb.webapp-west.dns_name
+    zone_id                = aws_lb.webapp-west.zone_id
     evaluate_target_health = true
   }
 }
