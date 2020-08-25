@@ -1,5 +1,9 @@
-variable "aws_region" {
+variable "aws_region_east" {
   default     = "us-east-1"
+}
+
+variable "aws_region_west" {
+  default     = "us-west-2"
 }
 
 variable "primary_zone_id" {

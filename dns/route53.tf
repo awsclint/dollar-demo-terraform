@@ -8,7 +8,7 @@ resource "aws_route53_record" "tld-east" {
   set_identifier  = "tld-east"
   ttl     =  60
   latency_routing_policy {
-    region = "us-east-1"
+    region = var.aws_region_east
   }
 }
 
@@ -21,7 +21,7 @@ resource "aws_route53_record" "tld-west" {
   set_identifier  = "tld-west"
   ttl     =  60
   latency_routing_policy {
-    region = "us-west-2"
+    region = var.aws_region_west
   }
 }
 

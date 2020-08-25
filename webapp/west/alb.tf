@@ -49,6 +49,12 @@ resource "aws_lb_target_group" "webapp-west" {
   protocol = "HTTP"
   target_type = "ip"
   vpc_id   = var.vpc_west
+
+  health_check {
+    healthy_threshold   = 2
+    timeout             = 2
+    unhealthy_threshold = 2
+  }
 }
 
 resource "aws_security_group" "webapp-west" {
