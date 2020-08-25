@@ -1,5 +1,9 @@
-variable "aws_region" {
+variable "aws_region_east" {
   default     = "us-east-1"
+}
+
+variable "aws_region_west" {
+  default     = "us-west-2"
 }
 
 variable "webapp" {
@@ -15,10 +19,15 @@ variable "owner" {
 
 variable "repo" {
   type = string
-  default = "dollars-demo-app"
+  default = "dollars-demo-web"
 }
 
 variable "branch" {
   type = string
   default = "master"
+}
+
+variable "ecs_cluster" {
+  type = string
+  default = "dollar-demo-cluster"
 }

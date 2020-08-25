@@ -13,7 +13,15 @@ resource "aws_codepipeline" "codepipeline" {
   artifact_store {
     location = aws_s3_bucket.webapp.bucket
     type     = "S3"
+    region   = var.aws_region_east
   }
+
+  artifact_store {
+    location = aws_s3_bucket.webapp-west.bucket
+    type     = "S3"
+    region   = var.aws_region_west
+  }
+
 
   stage {
     name = "Source"
@@ -51,10 +59,59 @@ resource "aws_codepipeline" "codepipeline" {
       }
     }
   }
+  stage {
+    name = "Deploy_to_EAST"
 
+    action {
+      name            = "Deploy"
+      category        = "Deploy"
+      owner           = "AWS"
+      provider        = "ECS"
+      region          = var.aws_region_east
+      input_artifacts = ["build_output"]
+      version         = "1"
+
+      configuration = {
+        ClusterName     = "${var.ecs_cluster}-east"
+        ServiceName     = var.webapp
+        FileName        = "imagedefinitions-east.json"
+      }
+    }
+  }
+
+  stage {
+  name = "Approve"
+
+  action {
+    name     = "Approval"
+    category = "Approval"
+    owner    = "AWS"
+    provider = "Manual"
+    version  = "1"
+    region   = var.aws_region_east
+  }
 }
 
+    stage {
+    name = "Deploy_to_WEST"
 
+    action {
+      name            = "Deploy"
+      category        = "Deploy"
+      owner           = "AWS"
+      provider        = "ECS"
+      region          = var.aws_region_west
+      input_artifacts = ["build_output"]
+      version         = "1"
+
+      configuration = {
+        ClusterName     = "${var.ecs_cluster}-west"
+        ServiceName     = var.webapp
+        FileName        = "imagedefinitions-west.json"
+      }
+    }
+  }
+}
 
 resource "aws_iam_role" "codepipeline_role" {
   name = "${var.webapp}-role"
@@ -93,14 +150,23 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
       ],
       "Resource": [
         "${aws_s3_bucket.webapp.arn}",
-        "${aws_s3_bucket.webapp.arn}/*"
-      ]
+        "${aws_s3_bucket.webapp.arn}/*",
+        "${aws_s3_bucket.webapp-west.arn}",
+        "${aws_s3_bucket.webapp-west.arn}/*"
+        ]
     },
     {
       "Effect": "Allow",
       "Action": [
+        "ecs:DescribeServices",
+        "ecs:DescribeTaskDefinition",
+        "ecs:DescribeTasks",
+        "ecs:ListTasks",
+        "ecs:RegisterTaskDefinition",
+        "ecs:UpdateService",
+        "codebuild:StartBuild",
         "codebuild:BatchGetBuilds",
-        "codebuild:StartBuild"
+        "iam:PassRole"
       ],
       "Resource": "*"
     }

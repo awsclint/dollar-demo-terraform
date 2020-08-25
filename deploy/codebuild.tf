@@ -19,10 +19,31 @@ resource "aws_codebuild_project" "webapp" {
     image                       = "aws/codebuild/standard:2.0"
     type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
+    privileged_mode             = "true"
 
     environment_variable {
-      name  = "AWS_REGION"
-      value = "us-east-2"
+      name  = "AWS_EAST_REGION"
+      value = "us-east-1"
+    }
+
+    environment_variable {
+      name  = "AWS_WEST_REGION"
+      value = "us-west-2"
+    }
+
+    environment_variable {
+      name  = "IMAGE_REPO_NAME"
+      value = "dollars-demo-web"
+    }
+
+    environment_variable {
+      name  = "IMAGE_TAG"
+      value = "latest" 
+    }
+    
+    environment_variable {     
+      name  = "AWS_ACCOUNT_ID"
+      value = "251607623447"       
     }
   }
   source {
@@ -89,7 +110,8 @@ resource "aws_iam_role_policy" "codebuild" {
         "ecr:PutImage",
         "ecr:InitiateLayerUpload",
         "ecr:UploadLayerPart",
-        "ecr:CompleteLayerUpload"
+        "ecr:CompleteLayerUpload",
+        "ecr:GetAuthorizationToken"
       ],
       "Resource": "*"
     },
