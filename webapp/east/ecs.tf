@@ -1,5 +1,5 @@
 resource "aws_ecs_cluster" "east" {
-  name = "dollar-demo-cluster-east"
+  name = var.ecs_cluster
   capacity_providers = ["FARGATE"]
   tags               = {
     Terraform   = "true"
@@ -26,6 +26,10 @@ resource "aws_ecs_service" "webapp-east" {
     task_definition = aws_ecs_task_definition.webapp-east.arn
     desired_count = 3
     launch_type = "FARGATE"
+
+    lifecycle {
+    ignore_changes = [desired_count,task_definition]
+     }
     
     network_configuration {
       subnets = var.priv_subnets

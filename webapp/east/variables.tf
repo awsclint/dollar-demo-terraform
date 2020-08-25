@@ -37,3 +37,8 @@ variable "fargate_execution_role" {
     type = string
     default = "arn:aws:iam::251607623447:role/fargate_execution_role"
 }
+
+variable "ecs_cluster" {
+  type = string
+  default = "dollar-demo-cluster-east"
+}
