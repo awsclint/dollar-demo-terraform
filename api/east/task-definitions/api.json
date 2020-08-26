@@ -1,0 +1,12 @@
+[{
+    "name": "dollars-demo-api",
+    "image": "251607623447.dkr.ecr.us-east-1.amazonaws.com/dollars-demo-api:latest",
+    "portMappings": [{
+        "containerPort": 5050,
+        "hostPort": 5050,
+        "protocol": "tcp"
+    }],
+    "essential": true,
+    "entryPoint": [],
+    "command": []
+}]
