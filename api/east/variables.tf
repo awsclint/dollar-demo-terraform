@@ -4,7 +4,7 @@ variable "aws_region" {
 
 variable "webapp" {
     type        = string
-    description = "Name of Web App"
+    description = "Name of API"
     default     = "dollars-demo-web"
 }
 
@@ -38,7 +38,7 @@ variable "fargate_execution_role" {
     default = "arn:aws:iam::251607623447:role/fargate_execution_role"
 }
 
-variable "ecs_cluster" {
+variable "ecs_cluster_arn" {
   type = string
-  default = "dollar-demo-cluster-east"
+  default = "arn:aws:ecs:us-east-1:251607623447:cluster/dollar-demo-cluster-east"
 }

@@ -64,14 +64,14 @@ resource "aws_security_group" "api-west" {
   vpc_id      = var.vpc_west
 
   ingress {
-    description = "TLS from VPC"
+    description = "443 from anywhere"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
     ingress {
-    description = "80 from VPC"
+    description = "80 from anywhere"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"

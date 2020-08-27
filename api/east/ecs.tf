@@ -1,13 +1,3 @@
-resource "aws_ecs_cluster" "east" {
-  name = var.ecs_cluster
-  capacity_providers = ["FARGATE"]
-  tags               = {
-    Terraform   = "true"
-    Environment = "dev"
-    Owner       = "cliwhite"
-  }
-}
-
 resource "aws_ecs_task_definition" "api-east" {
     family = var.api
     container_definitions = file("task-definitions/api.json")
@@ -22,7 +12,7 @@ resource "aws_ecs_task_definition" "api-east" {
 
 resource "aws_ecs_service" "api-east" {
     name = var.api
-    cluster = aws_ecs_cluster.east.id
+    cluster = var.ecs_cluster_arn
     task_definition = aws_ecs_task_definition.api-east.arn
     desired_count = 3
     launch_type = "FARGATE"
