@@ -1,9 +1,9 @@
-#WebApp ALB in US-WEST-2
-resource "aws_lb" "webapp-west" {
-  name               = var.webapp
+#api ALB in US-WEST-2
+resource "aws_lb" "api-west" {
+  name               = var.api
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.webapp-west.id]
+  security_groups    = [aws_security_group.api-west.id]
   subnets            = var.pub_subnets
 
   tags               = {
@@ -14,8 +14,8 @@ resource "aws_lb" "webapp-west" {
 }
 
 #ACM Cert was previously created
-resource "aws_lb_listener" "webapp-west-https" {
-  load_balancer_arn = aws_lb.webapp-west.arn
+resource "aws_lb_listener" "api-west-https" {
+  load_balancer_arn = aws_lb.api-west.arn
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
@@ -23,12 +23,12 @@ resource "aws_lb_listener" "webapp-west-https" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.webapp-west.arn
+    target_group_arn = aws_lb_target_group.api-west.arn
   }
 }
 
-resource "aws_lb_listener" "webapp-west-http" {
-  load_balancer_arn = aws_lb.webapp-west.arn
+resource "aws_lb_listener" "api-west-http" {
+  load_balancer_arn = aws_lb.api-west.arn
   port              = "80"
   protocol          = "HTTP"
 
@@ -43,9 +43,9 @@ resource "aws_lb_listener" "webapp-west-http" {
   }
 }
 
-resource "aws_lb_target_group" "webapp-west" {
-  name     = var.webapp
-  port     = 80
+resource "aws_lb_target_group" "api-west" {
+  name     = var.api
+  port     = 5050
   protocol = "HTTP"
   target_type = "ip"
   vpc_id   = var.vpc_west
@@ -58,20 +58,20 @@ resource "aws_lb_target_group" "webapp-west" {
   }
 }
 
-resource "aws_security_group" "webapp-west" {
-  name        = var.webapp
+resource "aws_security_group" "api-west" {
+  name        = var.api
   description = "Allow inbound web traffic from anywhere"
   vpc_id      = var.vpc_west
 
   ingress {
-    description = "TLS from VPC"
+    description = "443 from anywhere"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
     ingress {
-    description = "80 from VPC"
+    description = "80 from anywhere"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"

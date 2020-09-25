@@ -1,5 +1,5 @@
-resource "aws_ecr_repository" "web" {
-  name                 = var.webapp
+resource "aws_ecr_repository" "api" {
+  name                 = var.api
   image_tag_mutability = "MUTABLE"
   encryption_configuration {
       encryption_type      = "AES256"
